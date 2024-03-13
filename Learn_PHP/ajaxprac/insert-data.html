@@ -1,0 +1,306 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Ajax Connectivity</title>
+    <style>
+        body {
+            background-color: #f9f2ec;
+        }
+
+        table {
+            margin: 0 auto;
+            background-color: #f0f5f5;
+        }
+
+        .errorMessage {
+            background: #EFDCDD;
+            color: red;
+            padding: 10px;
+            margin: 10px;
+            font-size: 21px;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            display: none;
+        }
+
+        .successMessage {
+            background: #def1d8;
+            color: green;
+            padding: 10px;
+            margin: 10px;
+            font-size: 21px;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            display: none;
+        }
+
+        #modal {
+            background: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+            margin: 0 auto;
+        }
+
+        #modal_form {
+            background: #fff;
+            width: 30%;
+            position: relative;
+            top: 20%;
+            left: calc(50% - 20%);
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        #modal_form h2 {
+            margin: 0 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #000;
+        }
+
+        #close-btn {
+            background: red;
+            color: white;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <table border="1" cellspacing="0" cellpadding="10px">
+        <tr>
+            <th>
+                <h1>PHP with AJAX</h1>
+            </th>
+        </tr>
+        <tr>
+            <td>
+
+                <br>
+                <form id="addForm">
+                    First Name : <input type="text" name="firstName" id="fname">
+                    Last Name : <input type="text" name="lastName" id="lname"><br><br>
+                    Email : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="email" id="email"
+                        name="email">&nbsp;&nbsp;&nbsp;
+                    Password: <input type="password" name="pass" id="pass"><br><br>
+                    <input type="submit" value="SAVE" id="load-button"><br>
+                </form>
+                <div id="search_bar">
+                    <label>Live Search</label>
+                    <input type="text" id="search" autocomplete="off">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td id="table-data">
+                <table border="1" width="100%" cellspacing="0" cellpadding="10px">
+                    <!-- <tr></tr> -->
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div class="errorMessage"></div>
+    <div class="successMessage"></div>
+    <div id="modal">
+        <div id="modal_form">
+            <h2>Edit Rows</h2>
+            <table border="1" cellspacing="10px" cellpadding="10px">
+                <tr>
+                    <td>First Name</td>
+                    <td><input type="text" id="edit_fname"></td>
+                </tr>
+                <tr>
+                    <td>Last Name</td>
+                    <td><input type="text" id="edit_lname"></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" id="edit_submit" value="Save"></td>
+                </tr>
+            </table>
+            <div id="close-btn">X</div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            function loadData() {
+                $.ajax({
+                    url: "show-data.php",
+                    type: "POST",
+                    success: function (data) {
+                        $("#table-data").html(data);
+                    }
+                });
+            }
+
+            loadData();
+
+            $("#load-button").on("click", function (e) {
+
+                e.preventDefault();
+                var fname = $("#fname").val();
+                var lname = $("#lname").val();
+                var email = $("#email").val();
+                var pass = $("#pass").val();
+                if (fname == "" || lname == "" || email == "" || pass == "") {
+                    $(".errorMessage").html("All Fields are Required!").slideDown();
+                    $(".successMessage").slideUp();
+                } else {
+                    $.ajax({
+                        url: "db.php",
+                        type: "POST",
+                        data: { first_name: fname, last_name: lname, email_id: email, pass_id: pass },
+                        success: function (data) {
+                            if (data == 1) {
+                                loadData();
+                                $("#addForm").trigger("reset");
+                                $(".successMessage").html("Data Saved Successfully").slideDown();
+                                $(".errorMessage").slideUp();
+                            } else if (data == 0) {
+                                $(".errorMessage").html("Email already exits. Please try another!").slideDown();
+                                $(".successMessage").slideUp();
+                            } else {
+                                $(".errorMessage").html(data).slideDown();
+                                $(".successMessage").slideUp();
+                            }
+                        }
+                    });
+                }
+
+            });
+
+            $(document).on("click", ".delete-btn", function () {
+
+                var nameId = $(this).data("id");
+                var element = this;
+                var st_id = [];
+                $(":checkbox:checked").each(function (key) {
+                    st_id[key] = $(this).val();
+                });
+
+                if (st_id.length === 0) {
+                    if (confirm("Are your sure You want to Delete it")) {
+
+                       // Delete One Code 
+                        $.ajax({
+                            url: "delete.php",
+                            type: "POST",
+                            data: { ID: nameId },
+                            success: function (data) {
+                                if (data == 1) {
+                                    $(element).closest("tr").fadeOut();
+                                    $(".successMessage").html("Deleted Successfully!").slideDown();
+                                    $(".errorMessage").slideUp();
+                                    loadData();
+                                } else {
+                                    $(".errorMessage").html("Can't Delete Records!").slideDown();
+                                    $(".successMessage").slideUp();
+                                }
+                            }
+                        });
+                    }
+
+                } else {
+                    if (confirm("Are your sure You want to Delete it")) {
+                        $.ajax({
+                            url: "delete-multiple.php",
+                            type: "POST",
+                            data: { main_id: st_id },
+                            success: function (data) {
+                                if (data == 1) {
+                                    $(".successMessage").html("Deleted Successfully!").slideDown();
+                                    $(".errorMessage").slideUp();
+                                    loadData();
+                                } else {
+                                    $(".errorMessage").html("Can't Delete Records!").slideDown();
+                                    $(".successMessage").slideUp();
+                                }
+                            }
+                        });
+
+                    }
+                }
+
+
+
+            });
+
+            $(document).on("click", ".edit-btn", function () {
+
+                $("#modal").show();
+                var student_id = $(this).data("eid"); {
+                    // alert(student_id);
+                    $.ajax({
+                        url: "update.php",
+                        type: "POST",
+                        data: { id: student_id },
+                        success: function (data) {
+                            $("#modal_form table").html(data);
+                        }
+                    });
+                }
+
+
+            });
+            $(document).on("click", "#close-btn", function () {
+                $("#modal").hide();
+            });
+
+            $(document).on("click", "#edit_submit", function () {
+                var stuId = $("#edit_id").val();
+                var fname = $("#edit_fname").val();
+                var lname = $("#edit_lname").val();
+                var email_id = $("#edit_email").val();
+
+                $.ajax({
+                    url: "ajax-update-form.php",
+                    type: "POST",
+                    data: { id: stuId, first_name: fname, last_name: lname,email_i:email_id },
+                    success: function (data) {
+                        if (data == 1) {
+                            $("#modal").hide();
+                            loadData();
+                        }
+                    }
+                });
+
+            });
+
+            $("#search").on("keyup", function () {
+
+                var search_item = $(this).val();
+                $.ajax({
+                    url: "ajax-live.php",
+                    type: "POST",
+                    data: { search: search_item },
+                    success: function (data) {
+                        $("#table-data").html(data);
+                    }
+                });
+
+            });
+
+        });
+    </script>
+</body>
+
+</html>

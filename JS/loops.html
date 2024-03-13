@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JQuery Loops</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        #parent1 {
+            width: 90vw;
+            height: 600px;
+            margin: 0 auto;
+            border: 2px solid greenyellow;
+            position: relative;
+        }
+
+        #test {
+            width: 100px;
+            height: 100px;
+            top: 50px;
+            background-color: blueviolet;
+            border-radius: 55%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="parent1">
+        <div id="test" style="left: 0px;"></div>
+    </div>
+    <button onclick="stop()">Stop Interval</button>
+    <script>
+
+        let dir = "right"
+        let y = setInterval(Anim, 0);
+
+        function Anim(){
+            let target = parseInt(test.style.left)
+            console.log(target);
+            let currentRight = target + 100;
+
+            if(currentRight >=parent1.offsetWidth ){
+                dir = "left"
+            } else if (target == 0){
+                dir = "right"
+            }
+
+            if(dir == "right"){
+                test.style.left = (target + 5) + "px";
+            }else {
+                test.style.left = (target - 5) + "px";
+            }
+
+
+        }
+
+        function stop(){
+            clearInterval(y);
+        }
+
+
+
+
+
+
+        // var a = 1;
+        // While Loop
+        // while(a < 15){
+        //     a++;
+        //     document.write(a + ") Number" + "<br>");
+        // }
+
+
+
+        // Do While Loop
+        // do{
+        //     document.write(a + ") Number" + "<br>");
+        //     a++;
+        // }while(a<=10);
+
+
+
+        // For Loop 
+        // for(var a=1; a<=50; a++){
+        //     if(a % 2 == 0){
+        //         document.write(a + ") Number" + "<br>")
+        //     }
+        // }
+        // Nested Loops 
+        // for(let a=1; a<=100; a=a+10){
+        //     for(let b=a; b<a+10; b++){
+        //         document.write(b + "  ");
+        //     }
+        //     document.write("<br>");
+        // }                    
+
+        for (let a = 1; a <= 5; a++) {
+            for (let b = 1; b <= a; b++) {
+                // document.write(b + "  ");              
+                document.write(a + "  ");
+            }
+            document.write("<br>");
+        }
+
+        var a = Math.ceil(2.1)
+        document.write(a);
+        var a = Math.floor(2.35)
+        document.write(a);
+        var a = Math.round(2.65)
+        document.write(a + "<br>");
+        a = Math.floor((Math.random() * 100) + 1);
+        document.write(a + "<br>");
+        var now = new Date()
+        document.write(now.toDateString());
+
+
+    </script>
+</body>
+
+</html>

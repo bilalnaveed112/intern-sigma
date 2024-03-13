@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .images {
+            display: none;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div>
+        <div>
+            <img class="images" id="pix1" src="pexels1.jpg" alt="">
+            <img  class="images" id="pix2" src="pexels2.jpg" alt="">
+            <img  class="images" id="pix3" src="pexels3.jpg" alt="">
+            <img  class="images" id="pix4" src="card4.jpg" alt="">
+            <img  class="images" id="pix5" src="card5.jpg" alt="">
+            <img  class="images" id="pix6" src="card6.jpg" alt="">
+            <button onclick="showImages()">Click here to see Images</button>
+        </div>
+
+    </div>
+    <script>
+        
+     var count = 0;
+
+     function showImages(){
+
+        var all_images = document.getElementsByClassName("images");
+        
+        for (var i = 0, len = all_images.length; i < len; i++) {
+            all_images[i].style.display='none';
+        }
+
+        var images_count = all_images.length;
+
+        if(count == images_count){
+            count=1;
+        }
+        else{
+            count++;
+        }
+
+        document.getElementById("pix"+count).style.display='block';
+        
+     }
+    </script>
+</body>
+
+</html>
